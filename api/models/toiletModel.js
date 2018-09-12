@@ -24,4 +24,4 @@ let ToiletSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Toilets', ToiletSchema);
+module.exports = mongoose.model('Toilet', ToiletSchema);
