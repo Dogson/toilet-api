@@ -1,14 +1,15 @@
 'use strict';
-module.exports = function(app) {
-    let users = require('../controllers/userController');
+module.exports = function (app) {
+    const users = require('../controllers/user'),
+        auth = require('../controllers/auth');
 
-    // todoList Routes
+    // users Routes
     app.route('/users')
-        .get(users.list_all_users)
+        .get(auth.isAuthenticated, users.list_all_users) // TODO delete after testing
         .post(users.create_a_user);
 
-    app.route('/toilets/:toiletId')
-        .get(users.read_a_user)
-        .put(users.update_a_user)
-        .delete(users.delete_a_user);
+    app.route('/users/:userId')
+        .get(auth.isAuthenticated, users.read_a_user)
+        .put(auth.isAuthenticated, users.update_a_user)
+        .delete(auth.isAuthenticated, users.delete_a_user);
 };

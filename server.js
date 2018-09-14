@@ -1,23 +1,26 @@
-let express = require('express'),
+const express = require('express'),
     app = express(),
     port = process.env.PORT || 3000,
     mongoose = require('mongoose'),
+    passport = require('passport'),
+    bodyParser = require('body-parser');
 
     // Loading created schemas
-    Score = require('./api/models/score/scoreModel'),
-    Toilet = require('./api/models/toiletModel'),
-    User = require('./api/models/userModel'),
-    ScoreUser = require('./api/models/toiletModel')
-
-    bodyParser = require('body-parser');
+    require('./api/models/score/scoreModel');
+    require('./api/models/toiletModel');
+    require('./api/models/userModel');
+    require('./api/models/toiletModel');
 
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
-mongoose.connect('mongodb://localhost/toilet_advisor', { useNewUrlParser: true });
+mongoose.connect('mongodb://localhost/toilet_advisor', {useNewUrlParser: true});
 
-
-app.use(bodyParser.urlencoded({ extended: true }));
+// load bodyparser package
+app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
+
+// load passport package
+app.use(passport.initialize());
 
 // Loading routes
 require('./api/routes/toiletRoutes')(app);
