@@ -6,7 +6,8 @@ let ObjectId = Schema.Types.ObjectId;
 
 let ScoreUserSchema = new Schema({
     userId: {
-        type: String,
+        type: ObjectId,
+        ref: "User",
         required: "User id must be specified"
     },
     toiletId: {
@@ -20,4 +21,4 @@ let ScoreUserSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('ScoreUser', ScoreSchema);
+module.exports = mongoose.model('ScoreUser', ScoreUserSchema);

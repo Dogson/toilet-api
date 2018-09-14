@@ -2,7 +2,7 @@
 
 
 let mongoose = require('mongoose'),
-    Toilet = mongoose.model('Toilets');
+    Toilet = mongoose.model('Toilet');
 
 exports.list_all_toilets = function(req, res) {
     Toilet.find({}, function(err, toilet) {
