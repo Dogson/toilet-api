@@ -1,13 +1,21 @@
 'use strict';
-
-
+let specCharHelper = require('../helpers/specCharHelper');
 let mongoose = require('mongoose'),
     Toilet = mongoose.model('Toilet');
 
 exports.list_all_toilets = function (req, res) {
-    const searchKey = new RegExp(req.query.q, 'i');
+    let searchKey = req.query.q;
+    const specCharSearchKey = specCharHelper.make_pattern(searchKey);
+    const partialSearchKey = new RegExp(searchKey, 'i');
+    if (specCharSearchKey) {
+        searchKey = new RegExp(specCharSearchKey.source + "|" + partialSearchKey.source);
+    }
+    else {
+        searchKey = partialSearchKey;
+    }
+    const searchQuery = {placeName: searchKey};
 
-    Toilet.find({placeName: searchKey}, function (err, toilets) {
+    Toilet.find(searchQuery, function (err, toilets) {
         if (err)
             res.send(err);
         res.json(toilets);
