@@ -9,6 +9,14 @@ let ToiletSchema = new Schema({
         type: String,
         required: 'The Google Places id of place where the toilet is located must be specified'
     },
+    placeName: {
+        type: String,
+        required: 'The place name must be specified'
+    },
+    placeType: {
+        type: String,
+        required: 'The place type must be specified'
+    },
     globalScore: {
         type: Number,
         min: 0,

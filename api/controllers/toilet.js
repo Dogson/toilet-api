@@ -4,20 +4,19 @@
 let mongoose = require('mongoose'),
     Toilet = mongoose.model('Toilet');
 
-exports.list_all_toilets = function(req, res) {
-    Toilet.find({}, function(err, toilet) {
+exports.list_all_toilets = function (req, res) {
+    const searchKey = new RegExp(req.query.q, 'i');
+
+    Toilet.find({placeName: searchKey}, function (err, toilets) {
         if (err)
             res.send(err);
-        res.json(toilet);
+        res.json(toilets);
     });
 };
 
-
-
-
-exports.create_a_toilet = function(req, res) {
+exports.create_a_toilet = function (req, res) {
     let new_toilet = new Toilet(req.body);
-    new_toilet.save(function(err, toilet) {
+    new_toilet.save(function (err, toilet) {
         if (err)
             res.send(err);
         res.json(toilet);
@@ -25,8 +24,8 @@ exports.create_a_toilet = function(req, res) {
 };
 
 
-exports.read_a_toilet = function(req, res) {
-    Toilet.findById(req.params.toiletId, function(err, toilet) {
+exports.read_a_toilet = function (req, res) {
+    Toilet.findById(req.params.toiletId, function (err, toilet) {
         if (err)
             res.send(err);
         res.json(toilet);
@@ -34,8 +33,8 @@ exports.read_a_toilet = function(req, res) {
 };
 
 
-exports.update_a_toilet = function(req, res) {
-    Toilet.findOneAndUpdate({_id: req.params.toiletId}, req.body, {new: true}, function(err, toilet) {
+exports.update_a_toilet = function (req, res) {
+    Toilet.findOneAndUpdate({_id: req.params.toiletId}, req.body, {new: true}, function (err, toilet) {
         if (err)
             res.send(err);
         res.json(toilet);
@@ -43,15 +42,15 @@ exports.update_a_toilet = function(req, res) {
 };
 
 
-exports.delete_a_toilet = function(req, res) {
+exports.delete_a_toilet = function (req, res) {
 
 
     Toilet.remove({
         _id: req.params.toiletId
-    }, function(err, toilet) {
+    }, function (err, toilet) {
         if (err)
             res.send(err);
-        res.json({ message: 'Toilet successfully deleted' });
+        res.json({message: 'Toilet successfully deleted'});
     });
 };
 
