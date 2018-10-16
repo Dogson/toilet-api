@@ -1,9 +1,9 @@
 'use strict';
 let specCharHelper = require('../helpers/specCharHelper');
 let mongoose = require('mongoose'),
-    Toilet = mongoose.model('Toilet');
+    ToiletPlaces = mongoose.model('ToiletPlace');
 
-exports.list_all_toilets = function (req, res) {
+exports.list_all_places = function (req, res) {
     let searchKey = req.query.q;
     const specCharSearchKey = specCharHelper.make_pattern(searchKey);
     const partialSearchKey = new RegExp(searchKey, 'i');
@@ -15,34 +15,25 @@ exports.list_all_toilets = function (req, res) {
     }
     const searchQuery = {placeName: searchKey};
 
-    Toilet.find(searchQuery, function (err, toilets) {
+    ToiletPlaces.find(searchQuery, function (err, places) {
         if (err)
             res.send(err);
-        res.json(toilets);
+        res.json(places);
     });
 };
 
-exports.create_a_toilet = function (req, res) {
-    let new_toilet = new Toilet(req.body);
-    new_toilet.save(function (err, toilet) {
+exports.create_a_place = function (req, res) {
+    let new_place = new ToiletPlaces(req.body);
+    new_place.save(function (err, place) {
         if (err)
             res.send(err);
-        res.json(toilet);
-    });
-};
-
-
-exports.read_a_toilet = function (req, res) {
-    Toilet.findById(req.params.toiletId, function (err, toilet) {
-        if (err)
-            res.send(err);
-        res.json(toilet);
+        res.json(place);
     });
 };
 
 
-exports.update_a_toilet = function (req, res) {
-    Toilet.findOneAndUpdate({_id: req.params.toiletId}, req.body, {new: true}, function (err, toilet) {
+exports.read_a_place = function (req, res) {
+    ToiletPlaces.findById(req.params.toiletId, function (err, toilet) {
         if (err)
             res.send(err);
         res.json(toilet);
@@ -50,15 +41,24 @@ exports.update_a_toilet = function (req, res) {
 };
 
 
-exports.delete_a_toilet = function (req, res) {
+exports.update_a_place = function (req, res) {
+    ToiletPlaces.findOneAndUpdate({_id: req.params.toiletId}, req.body, {new: true}, function (err, toilet) {
+        if (err)
+            res.send(err);
+        res.json(toilet);
+    });
+};
 
 
-    Toilet.remove({
+exports.delete_a_place = function (req, res) {
+
+
+    ToiletPlaces.remove({
         _id: req.params.toiletId
     }, function (err, toilet) {
         if (err)
             res.send(err);
-        res.json({message: 'Toilet successfully deleted'});
+        res.json({message: 'ToiletPlaces successfully deleted'});
     });
 };
 

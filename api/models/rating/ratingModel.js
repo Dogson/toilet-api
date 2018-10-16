@@ -3,7 +3,11 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 
-let ScoreSchema = new Schema({
+let RatingSchema = new Schema({
+    voteNumber: {
+        type: Number,
+        min: 0
+    },
     global: {
         type: Number,
         min: 0,
@@ -26,4 +30,4 @@ let ScoreSchema = new Schema({
     }
 });
 
-module.exports = mongoose.model('Score', ScoreSchema);
+module.exports = mongoose.model('Rating', RatingSchema);
