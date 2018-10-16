@@ -4,10 +4,6 @@ let Schema = mongoose.Schema;
 
 
 let RatingSchema = new Schema({
-    voteNumber: {
-        type: Number,
-        min: 0
-    },
     global: {
         type: Number,
         min: 0,

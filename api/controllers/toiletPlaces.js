@@ -33,19 +33,19 @@ exports.create_a_place = function (req, res) {
 
 
 exports.read_a_place = function (req, res) {
-    ToiletPlaces.findById(req.params.toiletId, function (err, toilet) {
+    ToiletPlaces.findById(req.params.toiletPlaceId, function (err, toiletPlace) {
         if (err)
             res.send(err);
-        res.json(toilet);
+        res.json(toiletPlace);
     });
 };
 
 
 exports.update_a_place = function (req, res) {
-    ToiletPlaces.findOneAndUpdate({_id: req.params.toiletId}, req.body, {new: true}, function (err, toilet) {
+    ToiletPlaces.findOneAndUpdate({_id: req.params.toiletPlaceId}, req.body, {new: true}, function (err, toiletPlace) {
         if (err)
             res.send(err);
-        res.json(toilet);
+        res.json(toiletPlace);
     });
 };
 
@@ -54,8 +54,8 @@ exports.delete_a_place = function (req, res) {
 
 
     ToiletPlaces.remove({
-        _id: req.params.toiletId
-    }, function (err, toilet) {
+        _id: req.params.toiletPlaceId
+    }, function (err, toiletPlace) {
         if (err)
             res.send(err);
         res.json({message: 'ToiletPlaces successfully deleted'});

@@ -9,14 +9,19 @@ let ToiletSchema = new Schema({
       type: ObjectId,
       ref: "ToiletPlace"
     },
-    globalScore: {
+    globalRating: {
         type: Number,
         min: 0,
         max: 5
     },
-    score: {
+    ratingCount: {
+        type: Number,
+        default: 0,
+        min: 0
+    },
+    rating: {
         type: ObjectId,
-        ref: "Score"
+        ref: "Rating"
     },
     gender: {
         type: Number,
