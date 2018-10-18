@@ -9,7 +9,7 @@ exports.list_toilets = function (req, res) {
     if (toiletPlaceId) {
         query = {place: new ObjectId(toiletPlaceId)};
     }
-    Toilets.find(query, function (err, toilets) {
+    Toilets.find(query).populate('rating').exec(function (err, toilets) {
         if (err)
             res.send(err);
         res.json(toilets);
