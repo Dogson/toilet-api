@@ -5,18 +5,18 @@ let ObjectId = Schema.Types.ObjectId;
 
 
 let ToiletSchema = new Schema({
-    placeId: {
-        type: String,
-        required: 'The Google Places id of place where the toilet is located must be specified'
+    place: {
+      type: ObjectId,
+      ref: "ToiletPlace"
     },
-    globalScore: {
+    ratingCount: {
         type: Number,
-        min: 0,
-        max: 5
+        default: 0,
+        min: 0
     },
-    score: {
+    rating: {
         type: ObjectId,
-        ref: "Score"
+        ref: "Rating"
     },
     gender: {
         type: Number,
