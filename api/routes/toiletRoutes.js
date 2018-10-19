@@ -1,15 +1,15 @@
 'use strict';
 module.exports = function(app) {
     const toilets = require('../controllers/toilet'),
-    auth = require('../controllers/auth');
+        auth = require('../controllers/auth');
 
     // toilets Routes
     app.route('/toilets')
-        .get(auth.isAuthenticated, toilets.list_all_toilets)
-        .post(auth.isAuthenticated, toilets.create_a_toilet);
+        .get(toilets.list_toilets)
+        .post(toilets.create_a_toilet);
 
     app.route('/toilets/:toiletId')
-        .get(auth.isAuthenticated, toilets.read_a_toilet)
-        .put(auth.isAuthenticated, toilets.update_a_toilet)
-        .delete(auth.isAuthenticated, toilets.delete_a_toilet);
+        .get(toilets.read_a_toilet)
+        .put(toilets.update_a_toilet)
+        .delete(toilets.delete_a_toilet);
 };

@@ -3,7 +3,7 @@ let mongoose = require('mongoose');
 let Schema = mongoose.Schema;
 
 
-let ScoreSchema = new Schema({
+let RatingSchema = new Schema({
     global: {
         type: Number,
         min: 0,
@@ -14,16 +14,31 @@ let ScoreSchema = new Schema({
         min: 0,
         max: 5
     },
-    touch: {
+    attention: {
         type: Number,
         min: 0,
         max: 5
     },
-    clean: {
+    functionality: {
+        type: Number,
+        min: 0,
+        max: 5
+    },
+    cleanliness: {
+        type: Number,
+        min: 0,
+        max: 5
+    },
+    wowFactor: {
+        type: Number,
+        min: 0,
+        max: 5
+    },
+    value: {
         type: Number,
         min: 0,
         max: 5
     }
 });
 
-module.exports = mongoose.model('Score', ScoreSchema);
+module.exports = mongoose.model('Rating', RatingSchema);

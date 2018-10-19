@@ -6,10 +6,10 @@ const express = require('express'),
     bodyParser = require('body-parser');
 
     // Loading created schemas
-    require('./api/models/score/scoreModel');
-    require('./api/models/toiletModel');
+    require('./api/models/rating/ratingModel');
+    require('./api/models/toilet/toiletPlaceModel');
     require('./api/models/userModel');
-    require('./api/models/toiletModel');
+    require('./api/models/toilet/toiletModel');
 
 // mongoose instance connection url connection
 mongoose.Promise = global.Promise;
@@ -23,6 +23,7 @@ app.use(bodyParser.json());
 app.use(passport.initialize());
 
 // Loading routes
+require('./api/routes/toiletPlaceRoutes')(app);
 require('./api/routes/toiletRoutes')(app);
 require('./api/routes/userRoutes')(app);
 
