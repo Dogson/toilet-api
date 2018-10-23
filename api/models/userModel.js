@@ -1,7 +1,10 @@
 'use strict';
 const mongoose = require('mongoose');
-const bcrypt = require('bcrypt-nodejs');
+require("dotenv").config();
+const jwt_secret = process.env.JWT_SECRET;
 const Schema = mongoose.Schema;
+const crypto = require("crypto");
+const jwt = require("jsonwebtoken");
 
 const UserSchema = new Schema({
     username: {
@@ -16,32 +19,36 @@ const UserSchema = new Schema({
         type: String,
         required: "email must be specified",
         unique: true
-    }
+    },
+    salt: String
 });
 
-UserSchema.pre('save', function(callback) {
-    let user = this;
+UserSchema.methods.setPassword = function(password) {
+    this.salt = crypto.randomBytes(16).toString("hex");
+    this.password = crypto
+        .pbkdf2Sync(password, this.salt, 1000, 64, "sha512")
+        .toString("hex");
+};
 
-    // Break out if the password hasn't changed
-    if (!user.isModified('password')) return callback();
+UserSchema.methods.validPassword = function(password) {
+    let hash = crypto
+        .pbkdf2Sync(password, this.salt, 1000, 64, "sha512")
+        .toString("hex");
+    return this.password === hash;
+};
 
-    // Password changed so we need to hash it
-    bcrypt.genSalt(5, function(err, salt) {
-        if (err) return callback(err);
-
-        bcrypt.hash(user.password, salt, null, function(err, hash) {
-            if (err) return callback(err);
-            user.password = hash;
-            callback();
-        });
-    });
-});
-
-UserSchema.methods.verifyPassword = function(password, cb) {
-    bcrypt.compare(password, this.password, function(err, isMatch) {
-        if (err) return cb(err);
-        cb(null, isMatch);
-    });
+UserSchema.methods.generateJwt = function() {
+    const expiry = new Date();
+    expiry.setDate(expiry.getDate() + 7);
+    return jwt.sign(
+        {
+            _id: this._id,
+            email: this.email,
+            username: this.username,
+            exp: parseInt(expiry.getTime() / 1000)
+        },
+        jwt_secret
+    );
 };
 
 module.exports = mongoose.model('User', UserSchema);

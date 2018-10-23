@@ -5,11 +5,11 @@ module.exports = function(app) {
 
     // toilets Routes
     app.route('/toilets')
-        .get(toilets.list_toilets)
-        .post(toilets.create_a_toilet);
+        .get(auth.isLoggedIn, toilets.list_toilets)
+        .post(auth.isLoggedIn, toilets.create_a_toilet);
 
     app.route('/toilets/:toiletId')
-        .get(toilets.read_a_toilet)
-        .put(toilets.update_a_toilet)
-        .delete(toilets.delete_a_toilet);
+        .get(auth.isLoggedIn, toilets.read_a_toilet)
+        .put(auth.isLoggedIn, toilets.update_a_toilet)
+        .delete(auth.isLoggedIn, toilets.delete_a_toilet);
 };
