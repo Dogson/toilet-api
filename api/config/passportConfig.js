@@ -1,6 +1,6 @@
 const passport = require("passport");
 const passportJWT = require("passport-jwt");
-const JWTStrategy   = passportJWT.Strategy;
+const JWTStrategy = passportJWT.Strategy;
 const ExtractJWT = passportJWT.ExtractJwt;
 const LocalStrategy = require("passport-local").Strategy;
 const mongoose = require("mongoose");
@@ -26,18 +26,18 @@ passport.use(
             usernameField: "email"
         },
         (email, password, done) => {
-            User.findOne({ email: email }, (err, user) => {
+            User.findOne({email: email}, (err, user) => {
                 if (err) {
                     return done(err);
                 }
                 if (!user) {
                     return done(null, false, {
-                        email: "Email not found"
+                        errorType: 'Wrong credentials'
                     });
                 }
                 if (!user.validPassword(password)) {
                     return done(null, false, {
-                        password: "Password is wrong"
+                        errorType: 'Wrong credentials'
                     });
                 }
                 return done(null, user);
@@ -48,12 +48,12 @@ passport.use(
 
 passport.use(new JWTStrategy({
         jwtFromRequest: ExtractJWT.fromAuthHeaderAsBearerToken(),
-        secretOrKey   : jwt_secret
+        secretOrKey: jwt_secret
     },
     function (jwtPayload, cb) {
 
         //find the user in db if needed. This functionality may be omitted if you store everything you'll need in JWT payload.
-        return User.findOne({ _id: jwtPayload._id })
+        return User.findOne({_id: jwtPayload._id})
             .then(user => {
                 return cb(null, user);
             })
