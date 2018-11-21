@@ -59,6 +59,7 @@ exports.isLoggedIn = (req, res, next) => {
             res.status(400).json({errorType: 'Not logged'});
         }
         else if (user) {
+            req.user = user;
             return next();
         }
         else {

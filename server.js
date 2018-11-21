@@ -8,6 +8,7 @@ const express = require('express'),
 
 
 // Loading created schemas
+require('./api/models/rating/ratingUserModel');
 require('./api/models/rating/ratingModel');
 require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/userModel');
