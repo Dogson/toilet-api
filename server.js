@@ -8,7 +8,7 @@ const express = require('express'),
 
 
 // Loading created schemas
-require('./api/models/rating/ratingUserModel');
+require('./api/models/rating/userRatingModel');
 require('./api/models/rating/ratingModel');
 require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/userModel');
@@ -33,6 +33,7 @@ require('./api/routes/toiletPlaceRoutes')(app);
 require('./api/routes/toiletRoutes')(app);
 require('./api/routes/userRoutes')(app);
 require('./api/routes/authRoutes')(app);
+require('./api/routes/ratingRoutes')(app);
 
 app.listen(port);
 

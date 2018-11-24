@@ -2,7 +2,7 @@
 let mongoose = require('mongoose'),
     ObjectId = require('mongoose').Types.ObjectId,
     Toilets = mongoose.model('Toilet'),
-    RatingUsers = mongoose.model('RatingUser');
+    UserRatings = mongoose.model('UserRating');
 
 exports.list_toilets = function (req, res) {
     const toiletPlaceId = req.query.toiletPlaceId;
@@ -12,7 +12,7 @@ exports.list_toilets = function (req, res) {
     }
     Toilets.find(query).populate('rating').exec(function (err, toilets) {
         toilets.forEach((toilet) => {
-            toilet.userRating = RatingUsers.findOne({toiletId: new ObjectId(toilet._id), userId: req.user._id});
+            toilet.userRating = UserRatings.findOne({toiletId: new ObjectId(toilet._id), userId: req.user._id});
             if (err)
                 res.send(err);
         });
