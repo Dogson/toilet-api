@@ -21,6 +21,9 @@ let UserRatingSchema = new Schema({
     },
     hasMixtToilets: {
         type: Boolean
+    },
+    hasHandicappedToilets: {
+        type: Boolean
     }
 });
 

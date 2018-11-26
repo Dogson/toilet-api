@@ -8,11 +8,11 @@ const express = require('express'),
 
 
 // Loading created schemas
-require('./api/models/rating/userRatingModel');
 require('./api/models/rating/ratingModel');
-require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/userModel');
+require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/toilet/toiletModel');
+require('./api/models/rating/userRatingModel');
 
 //local config
 require("./api/config/passportConfig");

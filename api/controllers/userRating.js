@@ -25,6 +25,7 @@ exports.create_a_rating = function (req, res) {
 };
 
 exports.update_toilet_rating = function (req, res) {
+    //get all user rating and compute new average
     UserRatings.find({toiletId: new ObjectId(req.body.toiletId)}).populate('rating').exec(function (err, user_ratings) {
         let ratingCount = 0;
         let globalRating = {
@@ -57,7 +58,6 @@ exports.update_toilet_rating = function (req, res) {
                     if (err)
                         res.send(err);
                     Ratings.findOneAndUpdate({_id: new ObjectId(toilet.rating)}, globalRating, {new: true, upsert: true, returnNewDocument: true, returnOriginal: false}, function (err, rating) {
-                        console.log(rating);
                         if (rating._id !== toilet.rating) {
                             //new rating created
                             Toilets.findOneAndUpdate({_id: new ObjectId(req.body.toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function(err, toilet_updated) {
