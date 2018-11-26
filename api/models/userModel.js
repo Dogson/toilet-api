@@ -23,21 +23,21 @@ const UserSchema = new Schema({
     salt: String
 });
 
-UserSchema.methods.setPassword = function(password) {
+UserSchema.methods.setPassword = function (password) {
     this.salt = crypto.randomBytes(16).toString("hex");
     this.password = crypto
         .pbkdf2Sync(password, this.salt, 1000, 64, "sha512")
         .toString("hex");
 };
 
-UserSchema.methods.validPassword = function(password) {
+UserSchema.methods.validPassword = function (password) {
     let hash = crypto
         .pbkdf2Sync(password, this.salt, 1000, 64, "sha512")
         .toString("hex");
     return this.password === hash;
 };
 
-UserSchema.methods.generateJwt = function() {
+UserSchema.methods.generateJwt = function () {
     const expiry = new Date();
     expiry.setDate(expiry.getDate() + 7);
     return jwt.sign(

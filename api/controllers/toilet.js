@@ -7,17 +7,47 @@ let mongoose = require('mongoose'),
 exports.list_toilets = function (req, res) {
     const toiletPlaceId = req.query.toiletPlaceId;
     let query;
-    if (toiletPlaceId) {
-        query = {place: new ObjectId(toiletPlaceId)};
-    }
-    Toilets.find(query).populate('rating').exec(function (err, toilets) {
-        toilets.forEach((toilet) => {
-            toilet.userRating = UserRatings.findOne({toiletId: new ObjectId(toilet._id), userId: req.user._id});
-            if (err)
-                res.send(err);
+    // Toilets.find(query).populate('rating').exec(function (err, toilets) {
+    //     let toilets_populated = toilets.map((toilet) => {
+    //         let _toilet = {...toilet};
+    //         console.log(_toilet);
+    //         UserRatings.findOne({toiletId: new ObjectId(toilet._id), userId: req.user._id}).populate('rating').exec(function (err, userRating) {
+    //             _toilet.userRating = userRating;
+    //         });
+    //         if (_toilet.userRating) {
+    //             // console.log(_toilet);
+    //         }
+    //         return _toilet;
+    //     });
+    //     res.json(toilets_populated);
+    // });
+    Toilets.aggregate([
+        {
+            $match: {
+                place: new ObjectId(toiletPlaceId)
+            }
+        },
+        {
+            $lookup: {
+                from: "userratings",
+                localField: "_id",
+                foreignField: "toiletId",
+                as: "userRating"
+            }
+        },
+        {
+            $unwind: "$userRating"
+        },
+        {
+            $match: {
+                "userRating.userId": ObjectId(req.user.id)
+            }
+        }]).exec(function (err, docs) {
+            console.log(docs);
+        Toilets.populate(docs, [{path: 'rating'}], function (err, res) {
+            console.log(res);
         });
-        res.json(toilets);
-    });
+    })
 };
 
 exports.create_a_toilet = function (req, res) {
