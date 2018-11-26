@@ -14,7 +14,9 @@ exports.create_a_rating = function (req, res) {
         let new_user_rating = new UserRatings({
             rating: new ObjectId(rating._id),
             userId: new ObjectId(req.user._id),
-            toiletId: new ObjectId(req.body.toiletId)
+            toiletId: new ObjectId(req.body.toiletId),
+            hasMixtToilets: req.body.hasMixtToilets,
+            hasHandicappedToilets: req.body.hasHandicappedToilets
         });
         new_user_rating.save(function (err, user_rating) {
             if (err)
