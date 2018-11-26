@@ -5,5 +5,7 @@ module.exports = function(app) {
 
     // toilets Routes
     app.route('/rating')
-        .post(auth.isLoggedIn, userRating.create_a_rating);
+        .post(auth.isLoggedIn, userRating.create_a_user_rating);
+    app.route('/rating/:userRatingId')
+        .post(auth.isLoggedIn, userRating.update_a_user_rating);
 };

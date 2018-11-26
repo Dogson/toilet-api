@@ -6,7 +6,7 @@ let mongoose = require('mongoose'),
     ObjectId = require('mongoose').Types.ObjectId;
 
 
-exports.create_a_rating = function (req, res) {
+exports.create_a_user_rating = function (req, res) {
     let new_rating = new Ratings(req.body.userRating.rating);
     new_rating.save(function (err, rating) {
         if (err)
@@ -15,10 +15,28 @@ exports.create_a_rating = function (req, res) {
             rating: new ObjectId(rating._id),
             userId: new ObjectId(req.user._id),
             toiletId: new ObjectId(req.body.toiletId),
-            hasMixtToilets: req.body.hasMixtToilets,
-            hasHandicappedToilets: req.body.hasHandicappedToilets
+            hasMixtToilets: req.body.userRating.hasMixtToilets,
+            hasHandicappedToilets: req.body.userRating.hasHandicappedToilets
         });
         new_user_rating.save(function (err, user_rating) {
+            if (err)
+                res.send(err);
+            exports.update_toilet_rating(req, res);
+        });
+    });
+};
+
+exports.update_a_user_rating = function (req, res) {
+    let userRating = req.body.userRating;
+    Ratings.findOneAndUpdate({_id: userRating.rating._id}, userRating.rating, function (err, result) {
+        if (err)
+            res.send(err);
+        UserRatings.findOneAndUpdate({_id: req.body.userRating._id}, {
+            $set: {
+                hasMixtToilets: userRating.hasMixtToilets,
+                hasHandicappedToilets: userRating.hasHandicappedToilets
+            }
+        }, function(err, result) {
             if (err)
                 res.send(err);
             exports.update_toilet_rating(req, res);
@@ -59,10 +77,15 @@ exports.update_toilet_rating = function (req, res) {
                 function (err, toilet) {
                     if (err)
                         res.send(err);
-                    Ratings.findOneAndUpdate({_id: new ObjectId(toilet.rating)}, globalRating, {new: true, upsert: true, returnNewDocument: true, returnOriginal: false}, function (err, rating) {
+                    Ratings.findOneAndUpdate({_id: new ObjectId(toilet.rating)}, globalRating, {
+                        new: true,
+                        upsert: true,
+                        returnNewDocument: true,
+                        returnOriginal: false
+                    }, function (err, rating) {
                         if (rating._id !== toilet.rating) {
                             //new rating created
-                            Toilets.findOneAndUpdate({_id: new ObjectId(req.body.toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function(err, toilet_updated) {
+                            Toilets.findOneAndUpdate({_id: new ObjectId(req.body.toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
                                 if (err)
                                     res.send(err);
                                 res.json(toilet_updated);
