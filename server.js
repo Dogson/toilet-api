@@ -9,9 +9,10 @@ const express = require('express'),
 
 // Loading created schemas
 require('./api/models/rating/ratingModel');
-require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/userModel');
+require('./api/models/toilet/toiletPlaceModel');
 require('./api/models/toilet/toiletModel');
+require('./api/models/rating/userRatingModel');
 
 //local config
 require("./api/config/passportConfig");
@@ -32,6 +33,7 @@ require('./api/routes/toiletPlaceRoutes')(app);
 require('./api/routes/toiletRoutes')(app);
 require('./api/routes/userRoutes')(app);
 require('./api/routes/authRoutes')(app);
+require('./api/routes/ratingRoutes')(app);
 
 app.listen(port);
 

@@ -1,19 +1,67 @@
 'use strict';
 let mongoose = require('mongoose'),
     ObjectId = require('mongoose').Types.ObjectId,
-    Toilets = mongoose.model('Toilet');
+    Toilets = mongoose.model('Toilet'),
+    UserRatings = mongoose.model('UserRating');
 
 exports.list_toilets = function (req, res) {
     const toiletPlaceId = req.query.toiletPlaceId;
-    let query;
-    if (toiletPlaceId) {
-        query = {place: new ObjectId(toiletPlaceId)};
-    }
-    Toilets.find(query).populate('rating').exec(function (err, toilets) {
-        if (err)
-            res.send(err);
-        res.json(toilets);
+    Toilets.aggregate([
+        {
+            $match: {
+                place: new ObjectId(toiletPlaceId)
+            }
+        },
+        {
+            $lookup: {
+                from: "userratings",
+                localField: "_id",
+                foreignField: "toiletId",
+                as: "userRating",
+            }
+        },
+        {
+            "$addFields": {
+                "userRating": {
+                    "$arrayElemAt": [
+                        {
+                            "$filter": {
+                                "input": "$userRating",
+                                "as": "rat",
+                                "cond": {
+                                    "$eq": ["$$rat.userId", req.user._id]
+                                }
+                            }
+                        }, 0
+                    ]
+                }
+            }
+        }]).exec(function (err, docs) {
+        Toilets.populate(docs, [{path: 'rating'}, {
+            path: 'userRating.rating',
+            model: 'Rating'
+        }], function (err, toilets) {
+            if (err)
+                res.send(err);
+            const toiletsMapped = _mapToilets(toilets);
+            res.json(toiletsMapped);
+
+        });
     });
+
+    function _mapToilets(toilets) {
+        return toilets.map((_toilet) => {
+            let toilet = {};
+            toilet._id = _toilet._id;
+            toilet.gender = _toilet.gender;
+            toilet.place = _toilet.place;
+            toilet.ratingCount = _toilet.ratingCount;
+            toilet.rating = toilet.ratingCount > 0 && _toilet.rating;
+            toilet.userRating = _toilet.userRating;
+
+            return toilet;
+        });
+    }
 };
 
 exports.create_a_toilet = function (req, res) {
@@ -52,4 +100,5 @@ exports.delete_a_toilet = function (req, res) {
         res.json({message: 'Toilet successfully deleted'});
     });
 };
+
 

@@ -4,7 +4,7 @@ let Schema = mongoose.Schema;
 let ObjectId = Schema.Types.ObjectId;
 
 
-let RatingUserSchema = new Schema({
+let UserRatingSchema = new Schema({
     userId: {
         type: ObjectId,
         ref: "User",
@@ -18,7 +18,13 @@ let RatingUserSchema = new Schema({
     rating: {
         type: ObjectId,
         ref: "Rating"
+    },
+    hasMixtToilets: {
+        type: Boolean
+    },
+    hasHandicappedToilets: {
+        type: Boolean
     }
 });
 
-module.exports = mongoose.model('RatingUser', RatingUserSchema);
+module.exports = mongoose.model('UserRating', UserRatingSchema);

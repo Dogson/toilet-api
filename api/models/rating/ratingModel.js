@@ -14,22 +14,12 @@ let RatingSchema = new Schema({
         min: 0,
         max: 5
     },
-    attention: {
-        type: Number,
-        min: 0,
-        max: 5
-    },
     functionality: {
         type: Number,
         min: 0,
         max: 5
     },
     cleanliness: {
-        type: Number,
-        min: 0,
-        max: 5
-    },
-    wowFactor: {
         type: Number,
         min: 0,
         max: 5
