@@ -21,7 +21,7 @@ exports.create_a_user_rating = function (req, res) {
         new_user_rating.save(function (err, user_rating) {
             if (err)
                 res.send(err);
-            exports.update_toilet_rating(req, res);
+            exports.update_toilet_rating(req.body.toiletId, res);
         });
     });
 };
@@ -36,17 +36,17 @@ exports.update_a_user_rating = function (req, res) {
                 hasMixtToilets: userRating.hasMixtToilets,
                 hasHandicappedToilets: userRating.hasHandicappedToilets
             }
-        }, function(err, result) {
+        }, function (err, result) {
             if (err)
                 res.send(err);
-            exports.update_toilet_rating(req, res);
+            exports.update_toilet_rating(req.body.toiletId, res);
         });
     });
 };
 
-exports.update_toilet_rating = function (req, res) {
+exports.update_toilet_rating = function (toiletId, res) {
     //get all user rating and compute new average
-    UserRatings.find({toiletId: new ObjectId(req.body.toiletId)}).populate('rating').exec(function (err, user_ratings) {
+    UserRatings.find({toiletId: new ObjectId(toiletId)}).populate('rating').exec(function (err, user_ratings) {
         let ratingCount = 0;
         let globalRating = {
             global: 0,
@@ -71,12 +71,13 @@ exports.update_toilet_rating = function (req, res) {
             }
         });
 
-        if (ratingCount > 0) {
-            Toilets.findOneAndUpdate({_id: new ObjectId(req.body.toiletId)},
-                {$set: {ratingCount: ratingCount}},
-                function (err, toilet) {
-                    if (err)
-                        res.send(err);
+
+        Toilets.findOneAndUpdate({_id: new ObjectId(toiletId)},
+            {$set: {ratingCount: ratingCount}},
+            function (err, toilet) {
+                if (err)
+                    res.send(err);
+                if (ratingCount > 0) {
                     Ratings.findOneAndUpdate({_id: new ObjectId(toilet.rating)}, globalRating, {
                         new: true,
                         upsert: true,
@@ -85,7 +86,7 @@ exports.update_toilet_rating = function (req, res) {
                     }, function (err, rating) {
                         if (rating._id !== toilet.rating) {
                             //new rating created
-                            Toilets.findOneAndUpdate({_id: new ObjectId(req.body.toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
+                            Toilets.findOneAndUpdate({_id: new ObjectId(toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
                                 if (err)
                                     res.send(err);
                                 res.json(toilet_updated);
@@ -97,35 +98,34 @@ exports.update_toilet_rating = function (req, res) {
                             res.json(toilet);
                         }
                     });
-                });
+                }
+                else {
+                    res.json(toilet);
+                }
+            });
+    });
+};
+
+exports.delete_a_user_rating = function (req, res) {
+    UserRatings.findOne({
+        _id: ObjectId(req.params.userRatingId),
+        userId: ObjectId(req.user.id)
+    }, function (err, userRating) {
+        if (err)
+            res.send(err);
+        if (!userRating) {
+            res.send({error: "fail"});
         }
-
-
-    });
-};
-
-
-exports.update_a_place = function (req, res) {
-    UserRatings.findOneAndUpdate({
-        toiletId: req.params.toiletId,
-        userId: req.user._id
-    }, req.body, {new: true}, function (err, toiletPlace) {
-        if (err)
-            res.send(err);
-        res.json(toiletPlace);
-    });
-};
-
-
-exports.delete_a_place = function (req, res) {
-
-
-    ToiletPlaces.remove({
-        _id: req.params.toiletPlaceId
-    }, function (err, toiletPlace) {
-        if (err)
-            res.send(err);
-        res.json({message: 'ToiletPlaces successfully deleted'});
+        UserRatings.deleteOne({_id: req.params.userRatingId}, function (err) {
+            if (err)
+                res.send(err);
+            Ratings.deleteOne({_id: userRating.rating}, function (err) {
+                if (err)
+                    res.send(err);
+                const toiletId = userRating.toiletId;
+                exports.update_toilet_rating(toiletId, res);
+            })
+        });
     });
 };
 

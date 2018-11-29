@@ -56,7 +56,7 @@ exports.list_toilets = function (req, res) {
             toilet.gender = _toilet.gender;
             toilet.place = _toilet.place;
             toilet.ratingCount = _toilet.ratingCount;
-            toilet.rating = _toilet.rating;
+            toilet.rating = toilet.ratingCount > 0 && _toilet.rating;
             toilet.userRating = _toilet.userRating;
 
             return toilet;
