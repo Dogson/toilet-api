@@ -5,9 +5,16 @@ let ObjectId = Schema.Types.ObjectId;
 
 
 let ToiletSchema = new Schema({
-    place: {
-      type: ObjectId,
-      ref: "ToiletPlace"
+    _id: {
+        type: String
+    },
+    placeName: {
+        type: String,
+        required: 'The place name must be specified'
+    },
+    placeType: {
+        type: String,
+        required: 'The place type must be specified'
     },
     ratingCount: {
         type: Number,
@@ -18,9 +25,11 @@ let ToiletSchema = new Schema({
         type: ObjectId,
         ref: "Rating"
     },
-    gender: {
-        type: Number,
-        default: 0
+    isAccessible: {
+        type: Boolean
+    },
+    isMixed: {
+        type: Boolean
     }
 });
 

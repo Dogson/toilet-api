@@ -14,9 +14,9 @@ exports.create_a_user_rating = function (req, res) {
         let new_user_rating = new UserRatings({
             rating: new ObjectId(rating._id),
             userId: new ObjectId(req.user._id),
-            toiletId: new ObjectId(req.body.toiletId),
-            hasMixtToilets: req.body.userRating.hasMixtToilets,
-            hasHandicappedToilets: req.body.userRating.hasHandicappedToilets
+            toiletId: req.body.toiletId,
+            isMixed: req.body.userRating.isMixed,
+            isAccessible: req.body.userRating.isAccessible
         });
         new_user_rating.save(function (err, user_rating) {
             if (err)
@@ -33,8 +33,8 @@ exports.update_a_user_rating = function (req, res) {
             res.send(err);
         UserRatings.findOneAndUpdate({_id: req.body.userRating._id}, {
             $set: {
-                hasMixtToilets: userRating.hasMixtToilets,
-                hasHandicappedToilets: userRating.hasHandicappedToilets
+                isMixed: userRating.isMixed,
+                isAccessible: userRating.isAccessible
             }
         }, function (err, result) {
             if (err)
@@ -46,7 +46,7 @@ exports.update_a_user_rating = function (req, res) {
 
 exports.update_toilet_rating = function (toiletId, res) {
     //get all user rating and compute new average
-    UserRatings.find({toiletId: new ObjectId(toiletId)}).populate('rating').exec(function (err, user_ratings) {
+    UserRatings.find({toiletId: toiletId}).populate('rating').exec(function (err, user_ratings) {
         let ratingCount = 0;
         let globalRating = {
             global: 0,
@@ -72,7 +72,7 @@ exports.update_toilet_rating = function (toiletId, res) {
         });
 
 
-        Toilets.findOneAndUpdate({_id: new ObjectId(toiletId)},
+        Toilets.findOneAndUpdate({_id: toiletId},
             {$set: {ratingCount: ratingCount}},
             function (err, toilet) {
                 if (err)
@@ -86,7 +86,7 @@ exports.update_toilet_rating = function (toiletId, res) {
                     }, function (err, rating) {
                         if (rating._id !== toilet.rating) {
                             //new rating created
-                            Toilets.findOneAndUpdate({_id: new ObjectId(toiletId)}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
+                            Toilets.findOneAndUpdate({_id: toiletId}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
                                 if (err)
                                     res.send(err);
                                 res.json(toilet_updated);

@@ -11,7 +11,7 @@ let UserRatingSchema = new Schema({
         required: "User id must be specified"
     },
     toiletId: {
-        type: ObjectId,
+        type: String,
         ref: "Toilet",
         required: "Toilet id must be specified"
     },
@@ -19,10 +19,10 @@ let UserRatingSchema = new Schema({
         type: ObjectId,
         ref: "Rating"
     },
-    hasMixtToilets: {
+    isMixed: {
         type: Boolean
     },
-    hasHandicappedToilets: {
+    isAccessible: {
         type: Boolean
     }
 });
