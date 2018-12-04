@@ -47,6 +47,8 @@ exports.update_a_user_rating = function (req, res) {
 exports.update_toilet_rating = function (toiletId, res) {
     //get all user rating and compute new average
     UserRatings.find({toiletId: toiletId}).populate('rating').exec(function (err, user_ratings) {
+        let isAccessibleCount = 0;
+        let isMixedCount = 0;
         let ratingCount = 0;
         let globalRating = {
             global: 0,
@@ -69,6 +71,13 @@ exports.update_toilet_rating = function (toiletId, res) {
                     value: (globalRating.value * (ratingCount - 1) + rating.value) / ratingCount,
                 }
             }
+
+            if (user_rating.isMixed !== null) {
+                isMixedCount = user_rating.isMixed ? isMixedCount + 1 : isMixedCount - 1;
+            }
+            if (user_rating.isAccessible !== null) {
+                isAccessibleCount = user_rating.isAccessible ? isAccessibleCount + 1 : isAccessibleCount - 1;
+            }
         });
 
 
@@ -86,11 +95,20 @@ exports.update_toilet_rating = function (toiletId, res) {
                     }, function (err, rating) {
                         if (rating._id !== toilet.rating) {
                             //new rating created
-                            Toilets.findOneAndUpdate({_id: toiletId}, {$set: {rating: new ObjectId(rating._id)}}, function (err, toilet_updated) {
-                                if (err)
-                                    res.send(err);
-                                res.json(toilet_updated);
-                            });
+                            Toilets.findOneAndUpdate({_id: toiletId},
+                                {
+                                    $set:
+                                        {
+                                            rating: new ObjectId(rating._id),
+                                            isAccessible: isAccessibleCount !== 0 ? isAccessibleCount > 0 : null,
+                                            isMixed: isMixedCount !== 0 ? isMixedCount > 0 : null
+                                        }
+                                },
+                                function (err, toilet_updated) {
+                                    if (err)
+                                        res.send(err);
+                                    res.json(toilet_updated);
+                                });
                         }
                         else {
                             if (err)
