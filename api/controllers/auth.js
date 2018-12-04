@@ -19,6 +19,9 @@ exports.register = async (req, res, next) => {
             token: token
         });
     } catch (err) {
+        if (err.code === 11000) {
+            res.send({errorType: 'User exists'});
+        }
         res.status(401).json(err);
     }
 };
