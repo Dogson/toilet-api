@@ -8,14 +8,6 @@ let ToiletSchema = new Schema({
     _id: {
         type: String
     },
-    placeName: {
-        type: String,
-        required: 'The place name must be specified'
-    },
-    placeType: {
-        type: String,
-        required: 'The place type must be specified'
-    },
     ratingCount: {
         type: Number,
         default: 0,
