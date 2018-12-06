@@ -7,23 +7,33 @@ let mongoose = require('mongoose'),
 
 
 exports.create_a_user_rating = function (req, res) {
-    let new_rating = new Ratings(req.body.userRating.rating);
-    new_rating.save(function (err, rating) {
+    Toilets.findOneAndUpdate({_id: req.body.toiletId}, {_id: req.body.toiletId}, {
+        new: true,
+        upsert: true,
+        returnNewDocument: true,
+        returnOriginal: false
+    }, function(err) {
         if (err)
             res.send(err);
-        let new_user_rating = new UserRatings({
-            rating: new ObjectId(rating._id),
-            userId: new ObjectId(req.user._id),
-            toiletId: req.body.toiletId,
-            isMixed: req.body.userRating.isMixed,
-            isAccessible: req.body.userRating.isAccessible
-        });
-        new_user_rating.save(function (err, user_rating) {
+        let new_rating = new Ratings(req.body.userRating.rating);
+        new_rating.save(function (err, rating) {
             if (err)
                 res.send(err);
-            exports.update_toilet_rating(req.body.toiletId, res);
+            let new_user_rating = new UserRatings({
+                rating: new ObjectId(rating._id),
+                userId: new ObjectId(req.user._id),
+                toiletId: req.body.toiletId,
+                isMixed: req.body.userRating.isMixed,
+                isAccessible: req.body.userRating.isAccessible
+            });
+            new_user_rating.save(function (err, user_rating) {
+                if (err)
+                    res.send(err);
+                exports.update_toilet_rating(req.body.toiletId, res);
+            });
         });
     });
+
 };
 
 exports.update_a_user_rating = function (req, res) {
@@ -113,12 +123,24 @@ exports.update_toilet_rating = function (toiletId, res) {
                         else {
                             if (err)
                                 res.send(err);
-                            res.json(toilet);
                         }
                     });
                 }
                 else {
-                    res.json(toilet);
+                    Toilets.findOneAndUpdate({_id: toiletId},
+                        {
+                            $set:
+                                {
+                                    rating: null,
+                                    isAccessible: null,
+                                    isMixed :null
+                                }
+                        },
+                        function (err, toilet_updated) {
+                            if (err)
+                                res.send(err);
+                            res.json(toilet_updated);
+                        });
                 }
             });
     });
