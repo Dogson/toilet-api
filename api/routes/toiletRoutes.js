@@ -5,7 +5,6 @@ module.exports = function(app) {
 
     // toilets Routes
     app.route('/toilets')
-        .get(auth.isLoggedIn, toilets.list_toilets)
         .post(auth.isLoggedIn, toilets.create_a_toilet);
 
     app.route('/toilets/:toiletId')
